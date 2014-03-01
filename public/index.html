@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="myApp">
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-		<title>My Site</title>
+		<title>My Angular App</title>
 
 		<meta name="description" content="My website.">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,11 +17,18 @@
 	</head>
 	<body>
 
-		<h1>My Site with Angular</h1>
-		<p>And so it begins!</p>
+		<app-header></app-header>
+
+		<section class="contents" ng-view></section>
 
 		<!-- Scripts -->
 		<script src="scripts/full/jquery.js"></script>
+		<script src="scripts/full/angular.js"></script>
+		<script src="scripts/full/angular-route.js"></script>
 		<script src="scripts/full/app.js"></script>
+		<script src="scripts/full/filters/myFilter.js"></script>
+		<script src="scripts/full/services/myService.js"></script>
+		<script src="scripts/full/directives/appHeader.js"></script>
+		<script src="scripts/full/controllers/HomeCtrl.js"></script>
 	</body>
 </html>
