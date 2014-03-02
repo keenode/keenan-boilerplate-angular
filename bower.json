@@ -1,5 +1,5 @@
 {
-  "name": "keenan-boilerplate",
+  "name": "keenan-boilerplate-angular",
   "dependencies": {
     "jquery": "~2.1.0",
     "angular": "~1.2.13",
