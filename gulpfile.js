@@ -11,7 +11,8 @@ var sass		= require('gulp-sass'),
 	imagemin	= require('gulp-imagemin'),
 	htmlbuild	= require('gulp-htmlbuild'),
 	refresh		= require('gulp-livereload'),
-	plumber		= require('gulp-plumber');
+	plumber		= require('gulp-plumber'),
+	clean		= require('gulp-clean');
 
 
 /*	--------------------------------------------------------
@@ -55,21 +56,25 @@ var paths = {
 						],
 	scripts_compile:	[
 							'bower_components/jquery/dist/jquery.js',
+							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/affix.js',
+							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/alert.js',
+							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/button.js',
+							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/carousel.js',
+							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/collapse.js',
+							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/dropdown.js',
+							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/tab.js',
+							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/transition.js',
+							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/scrollspy.js',
+							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/modal.js',
+							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/tooltip.js',
+							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/popover.js',
 							'bower_components/angular/angular.js',
 							'bower_components/angular-route/angular-route.js',
-							'src/scripts/**/*.js'
-							// 'src/scripts/controllers/*.js',
-							// 'src/scripts/' + js_filename + '.js'
-						],
-	scripts_dev:		[
-							'scripts/full/jquery.js',
-							'scripts/full/angular.js',
-							'scripts/full/angular-route.js',
-							'scripts/full/' + js_filename + '.js',
-							'scripts/full/filters/myFilter.js',
-							'scripts/full/services/myService.js',
-							'scripts/full/directives/appHeader.js',
-							'scripts/full/controllers/HomeCtrl.js'
+							'src/scripts/' + js_filename + '.js',
+							'src/scripts/filters/myFilter.js',
+							'src/scripts/services/myService.js',
+							'src/scripts/directives/appHeader.js',
+							'src/scripts/controllers/HomeCtrl.js'
 						],
 	scripts_lint:		[
 							'src/scripts/**/*.js',
@@ -93,6 +98,36 @@ var paths = {
 	-------------------------------------------------------- */
 gulp.task('set-prod', function() {
 	env = 'prod';
+});
+
+
+/*	--------------------------------------------------------
+	+ CLEAN STYLES
+	--	Remove previous css from public dir
+	-------------------------------------------------------- */
+gulp.task('clean-styles', function() {
+	return gulp.src('public/css', { read: false })
+		.pipe(clean());
+});
+
+
+/*	--------------------------------------------------------
+	+ CLEAN SCRIPTS
+	--	Remove previous scripts from public dir
+	-------------------------------------------------------- */
+gulp.task('clean-scripts', function() {
+	return gulp.src('public/scripts', { read: false })
+		.pipe(clean());
+});
+
+
+/*	--------------------------------------------------------
+	+ CLEAN IMAGES
+	--	Remove previous images from public dir
+	-------------------------------------------------------- */
+gulp.task('clean-images', function() {
+	return gulp.src('public/images', { read: false })
+		.pipe(clean());
 });
 
 
@@ -182,20 +217,27 @@ gulp.task('images', function() {
 	--	Write correct scripts into html files
 	-------------------------------------------------------- */
 gulp.task('htmlbuild', function() {
-	gulp.src(paths.html)
-		.pipe(plumber())
-		.pipe(htmlbuild({
-			js: function(files, callback) {
-				if(env === 'prod')
-					// Use minified scripts for production environment
-					callback(null, [ 'scripts/' + js_filename + '.min.js' ]);
-				else
-					// Use full list of non-minified scripts for dev environment
-					callback(null, paths.scripts_dev);
-			}
-		}))
-		.pipe(gulp.dest('public'))
-		.pipe(refresh(lrserver));
+
+	if(env === 'prod') {
+		// PROD: Use minified scripts for production environment
+		gulp.src(paths.html)
+			.pipe(plumber())
+			.pipe(htmlbuild({
+				js: htmlbuild.preprocess.js(function(block) {
+					block.write('scripts/' + js_filename + '.min.js');
+					block.end();
+				})
+			}))
+			.pipe(gulp.dest('public'))
+			.pipe(refresh(lrserver));
+	}
+	else {
+		// DEV: Only copy over the html files to the public dir
+		gulp.src(paths.html)
+			.pipe(plumber())
+			.pipe(gulp.dest('public'))
+			.pipe(refresh(lrserver));
+	}
 });
 
 
@@ -230,15 +272,15 @@ gulp.task('serve', function() {
 	-------------------------------------------------------- */
 gulp.task('watch', function() {
 	if(env === 'prod')
-		gulp.watch(paths.styles, ['styles']);
+		gulp.watch(paths.styles, ['clean-styles', 'styles']);
 	else
-		gulp.watch(paths.styles, ['styles-dev']);
-	gulp.watch(paths.scripts_compile,	['js-lint', 'copy-scripts', 'scripts']);
-	gulp.watch(paths.images,			['images']);
-	gulp.watch(paths.html,				['htmlbuild']);
-	gulp.watch(paths.html_partials,		['copy-partials']);
+		gulp.watch(paths.styles, ['clean-styles', 'styles-dev']);
+	gulp.watch(paths.scripts_compile, ['clean-scripts', 'js-lint', 'copy-scripts', 'scripts']);
+	gulp.watch(paths.images, ['clean-images', 'images']);
+	gulp.watch(paths.html, ['htmlbuild']);
+	gulp.watch(paths.html_partials, ['copy-partials']);
 });
 
 // The default task (called when you run `gulp`)
-gulp.task('default',	['styles-dev', 'js-lint', 'scripts', 'copy-scripts', 'images', 'htmlbuild', 'copy-partials', 'serve', 'watch']);
-gulp.task('prod',		['set-prod', 'styles', 'js-lint', 'scripts', 'copy-scripts', 'images', 'htmlbuild', 'copy-partials', 'serve', 'watch']);
+gulp.task('default', ['clean-styles', 'clean-scripts', 'clean-images', 'styles-dev', 'js-lint', 'scripts', 'copy-scripts', 'images', 'htmlbuild', 'copy-partials', 'serve', 'watch']);
+gulp.task('prod', ['clean-styles', 'clean-scripts', 'clean-images', 'set-prod', 'styles', 'js-lint', 'scripts', 'copy-scripts', 'images', 'htmlbuild', 'copy-partials', 'serve', 'watch']);
