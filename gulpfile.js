@@ -70,6 +70,7 @@ var paths = {
 							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/popover.js',
 							'bower_components/angular/angular.js',
 							'bower_components/angular-route/angular-route.js',
+							'bower_components/angular-animate/angular-animate.js',
 							'src/scripts/' + js_filename + '.js',
 							'src/scripts/filters/myFilter.js',
 							'src/scripts/services/myService.js',
