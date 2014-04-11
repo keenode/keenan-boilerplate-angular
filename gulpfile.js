@@ -3,7 +3,7 @@ var gulp = require('gulp');
 /*	--------------------------------------------------------
 	+ GULP PLUGINS
 	-------------------------------------------------------- */
-var sass		= require('gulp-sass'),
+var sass		= require('gulp-ruby-sass'),
 	minifyCSS	= require('gulp-minify-css'),
 	jshint		= require('gulp-jshint'),
 	concat		= require('gulp-concat'),
@@ -50,24 +50,26 @@ var css_filename = 'master';
 /*	--------------------------------------------------------
 	+ PATHS
 	-------------------------------------------------------- */
+var bower_folder = 'bower_components';
+var bootstrap_js_path = bower_folder + '/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/';
 var paths = {
 	styles:				[
 							'src/scss/**/*.{scss,sass}'
 						],
 	scripts_compile:	[
-							'bower_components/jquery/dist/jquery.js',
-							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/affix.js',
-							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/alert.js',
-							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/button.js',
-							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/carousel.js',
-							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/collapse.js',
-							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/dropdown.js',
-							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/tab.js',
-							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/transition.js',
-							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/scrollspy.js',
-							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/modal.js',
-							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/tooltip.js',
-							'bower_components/bootstrap-sass-official/vendor/assets/javascripts/bootstrap/popover.js',
+							bower_folder + '/jquery/dist/jquery.js',
+							bootstrap_js_path + 'affix.js',
+							bootstrap_js_path + 'alert.js',
+							bootstrap_js_path + 'button.js',
+							bootstrap_js_path + 'carousel.js',
+							bootstrap_js_path + 'collapse.js',
+							bootstrap_js_path + 'dropdown.js',
+							bootstrap_js_path + 'tab.js',
+							bootstrap_js_path + 'transition.js',
+							bootstrap_js_path + 'scrollspy.js',
+							bootstrap_js_path + 'modal.js',
+							bootstrap_js_path + 'tooltip.js',
+							bootstrap_js_path + 'popover.js',
 							'bower_components/angular/angular.js',
 							'bower_components/angular-route/angular-route.js',
 							'bower_components/angular-animate/angular-animate.js',
@@ -139,9 +141,7 @@ gulp.task('clean-images', function() {
 gulp.task('styles-dev', function() {
     return gulp.src(paths.styles)
 		.pipe(plumber())
-		// Set errLogToConsole to 'true' to prevent gulp from
-		// stopping on errors.
-        .pipe(sass({ errLogToConsole: true }))
+		.pipe(sass())
         .pipe(gulp.dest('public/css'))
         .pipe(refresh(lrserver));
 });
