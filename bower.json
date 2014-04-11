@@ -5,6 +5,9 @@
     "angular": "1.2.15",
     "angular-route": "1.2.15",
     "bootstrap-sass-official": "~3.1.1",
-    "angular-animate": "~1.2.15"
+    "angular-animate": "~1.2.15",
+    "bourbon": "~3.1.8",
+    "neat": "~1.6.0",
+    "bitters": "~0.9.3"
   }
 }
